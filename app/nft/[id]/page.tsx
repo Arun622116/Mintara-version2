@@ -31,17 +31,33 @@ export default function NftDetailPage({ params }: Props) {
   const royalty = nft.price ? nft.price * (ROYALTY_PCT / 100) : 0
 
   return (
-    <div style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px 64px' }}>
+    <div style={{ maxWidth: 1280, margin: '0 auto', padding: '16px 16px 120px' }}>
+      <style>{`
+        .nft-detail-wrap { display:grid; grid-template-columns:1fr; gap:20px; align-items:flex-start; }
+        .nft-detail-breadcrumb { padding:0 0 12px; font-size:12px; }
+        .nft-sticky-buy { position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:white; border-top:1px solid var(--gray-200); display:flex; gap:10px; z-index:100; }
+        .nft-sticky-buy-hidden { display:none; }
+        .nft-price-card { display:none; }
+        @media (min-width:640px) {
+          .nft-detail-wrap { grid-template-columns:1fr 1fr; gap:32px; padding:0; }
+          .nft-detail-breadcrumb { font-size:13px; }
+          .nft-sticky-buy { display:none !important; }
+          .nft-price-card { display:block !important; }
+        }
+        @media (min-width:1024px) {
+          .nft-detail-wrap { gap:48px; }
+        }
+      `}</style>
       {/* Breadcrumb */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--gray-500)', marginBottom: 24 }}>
+      <div className="nft-detail-breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--gray-500)', marginBottom: 16 }}>
         <Link href="/" style={{ color: 'var(--gray-500)', textDecoration: 'none' }}>Home</Link>
         <span>/</span>
         {collection && <Link href={`/collection/${collection.slug}`} style={{ color: 'var(--gray-500)', textDecoration: 'none' }}>{collection.name}</Link>}
         <span>/</span>
-        <span style={{ color: 'var(--gray-900)', fontWeight: 600 }}>{nft.name}</span>
+        <span style={{ color: 'var(--gray-900)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nft.name}</span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'flex-start' }}>
+      <div className="nft-detail-wrap">
         {/* Left — Artwork */}
         <div>
           <div style={{ borderRadius: 20, overflow: 'hidden', border: '1px solid var(--gray-200)', position: 'relative', aspectRatio: '1', background: `linear-gradient(135deg,${p.from},${p.to})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -126,9 +142,9 @@ export default function NftDetailPage({ params }: Props) {
             <span>{nft.views} views</span>
           </div>
 
-          {/* Price card */}
+          {/* Price card — desktop only */}
           {nft.status !== 'not_for_sale' && (
-            <div style={{ border: '1px solid var(--gray-200)', borderRadius: 16, padding: 20, marginBottom: 20 }}>
+            <div className="nft-price-card" style={{ border: '1px solid var(--gray-200)', borderRadius: 16, padding: 20, marginBottom: 20 }}>
               {nft.status === 'on_auction' && nft.auctionEndsAt && (
                 <div style={{ fontSize: 13, color: 'var(--gray-500)', marginBottom: 8 }}>
                   Sale ends {new Date(nft.auctionEndsAt).toLocaleString('en-IN')}
@@ -175,6 +191,29 @@ export default function NftDetailPage({ params }: Props) {
           )}
         </div>
       </div>
+
+      {/* Sticky buy bar — mobile only */}
+      {nft.status !== 'not_for_sale' && (
+        <div className="nft-sticky-buy">
+          {nft.price !== null && (
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 0 }}>
+              <div style={{ fontSize: 11, color: 'var(--gray-400)' }}>{nft.status === 'on_auction' ? 'Current bid' : 'Price'}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--gray-900)' }}>{nft.price} MATIC</div>
+            </div>
+          )}
+          <div style={{ flex: 1 }} />
+          {nft.status === 'buy_now' && (
+            <button onClick={() => setBuyOpen(true)}
+              style={{ height: 44, padding: '0 20px', borderRadius: 12, border: 'none', background: 'var(--blue)', color: 'white', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+              Buy now
+            </button>
+          )}
+          <button onClick={() => setOfferOpen(true)}
+            style={{ height: 44, padding: '0 16px', borderRadius: 12, border: '1.5px solid var(--blue)', background: 'white', color: 'var(--blue)', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+            Make offer
+          </button>
+        </div>
+      )}
 
       {/* Buy Modal */}
       {buyOpen && <Modal onClose={() => setBuyOpen(false)}>

@@ -30,12 +30,24 @@ export default function ArtistPage({ params }: Props) {
     <div>
       <CreatorProfileHeader creator={creator} />
 
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px 64px' }}>
+      <style>{`
+        .artist-page { max-width:1280px; margin:0 auto; padding:0 16px 64px; }
+        .artist-act-head { display:grid; grid-template-columns:1fr 90px 100px 70px; padding:10px 12px; border-bottom:1px solid var(--gray-150); background:var(--gray-50); }
+        .artist-act-row  { display:grid; grid-template-columns:1fr 90px 100px 70px; padding:12px; }
+        .artist-act-from { display:none; }
+        @media (min-width:640px) {
+          .artist-page { padding:0 24px 64px; }
+          .artist-act-head { grid-template-columns:1fr 100px 120px 80px 80px; padding:10px 16px; }
+          .artist-act-row  { grid-template-columns:1fr 100px 120px 80px 80px; padding:12px 16px; }
+          .artist-act-from { display:flex; }
+        }
+      `}</style>
+      <div className="artist-page">
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid var(--gray-200)', marginBottom: 28, marginTop: 8 }}>
+        <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid var(--gray-200)', marginBottom: 24, marginTop: 8, overflowX: 'auto' }}>
           {(['created', 'collected', 'activity'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
-              style={{ height: 44, padding: '0 20px', border: 'none', background: 'none', fontSize: 14, fontWeight: 600, cursor: 'pointer', color: tab === t ? 'var(--blue)' : 'var(--gray-500)', borderBottom: `2px solid ${tab === t ? 'var(--blue)' : 'transparent'}`, transition: '.15s', textTransform: 'capitalize' }}>
+              style={{ height: 44, padding: '0 16px', border: 'none', background: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', color: tab === t ? 'var(--blue)' : 'var(--gray-500)', borderBottom: `2px solid ${tab === t ? 'var(--blue)' : 'transparent'}`, transition: '.15s', textTransform: 'capitalize', whiteSpace: 'nowrap', flexShrink: 0 }}>
               {t === 'created' ? `Created (${createdNfts.length})` : t === 'collected' ? `Collected (${collectedNfts.length})` : 'Activity'}
             </button>
           ))}
@@ -49,9 +61,9 @@ export default function ArtistPage({ params }: Props) {
         )}
         {tab === 'activity' && (
           <div style={{ border: '1px solid var(--gray-200)', borderRadius: 12, overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 120px 80px 80px', padding: '10px 16px', borderBottom: '1px solid var(--gray-150)', background: 'var(--gray-50)' }}>
-              {['Item', 'Event', 'Price', 'From', 'Time'].map(h => (
-                <div key={h} style={{ fontSize: 11, fontWeight: 700, color: 'var(--gray-400)', textTransform: 'uppercase', letterSpacing: '.06em' }}>{h}</div>
+            <div className="artist-act-head">
+              {['Item', 'Event', 'Price', 'From', 'Time'].map((h, hi) => (
+                <div key={h} className={hi === 3 ? 'artist-act-from' : ''} style={{ fontSize: 11, fontWeight: 700, color: 'var(--gray-400)', textTransform: 'uppercase', letterSpacing: '.06em' }}>{h}</div>
               ))}
             </div>
             {activity.length === 0 && (
@@ -61,20 +73,20 @@ export default function ArtistPage({ params }: Props) {
               const p = pal((parseInt(a.nftId.replace('nft', '')) - 1) % 12)
               const ev = EVENT_COLORS[a.eventType] ?? EVENT_COLORS.Transfer
               return (
-                <div key={a.id} className="activity-row"
-                  style={{ display: 'grid', gridTemplateColumns: '1fr 100px 120px 80px 80px', padding: '12px 16px', borderBottom: i < activity.length - 1 ? '1px solid var(--gray-150)' : 'none' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 8, background: `linear-gradient(135deg,${p.from},${p.to})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: p.accent, flexShrink: 0 }}>{p.accent[0]}</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--gray-900)' }}>{a.nftName}</div>
+                <div key={a.id} className="activity-row artist-act-row"
+                  style={{ borderBottom: i < activity.length - 1 ? '1px solid var(--gray-150)' : 'none' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 8, background: `linear-gradient(135deg,${p.from},${p.to})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: p.accent, flexShrink: 0 }}>{p.accent[0]}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--gray-900)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.nftName}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span style={{ padding: '3px 9px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: ev.bg, color: ev.color }}>{a.eventType}</span>
+                    <span style={{ padding: '3px 8px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: ev.bg, color: ev.color }}>{a.eventType}</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    {a.price && <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--gray-900)' }}>{a.price} MATIC</span>}
+                    {a.price && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--gray-900)' }}>{a.price} MATIC</span>}
                     {a.priceINR && <span style={{ fontSize: 11, color: 'var(--gray-500)' }}>{a.priceINR}</span>}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', fontSize: 12, color: 'var(--gray-500)' }}>{a.from}</div>
+                  <div className="artist-act-from" style={{ alignItems: 'center', fontSize: 12, color: 'var(--gray-500)' }}>{a.from}</div>
                   <div style={{ display: 'flex', alignItems: 'center', fontSize: 12, color: 'var(--gray-400)' }}>{timeAgo(a.timestamp)}</div>
                 </div>
               )

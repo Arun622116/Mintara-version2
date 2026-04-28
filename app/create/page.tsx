@@ -34,8 +34,17 @@ export default function CreatePage() {
   }
 
   return (
-    <div style={{ maxWidth: 720, margin: '40px auto', padding: '0 24px 64px' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 800, color: 'var(--gray-900)', marginBottom: 8 }}>Create NFT</h1>
+    <div style={{ maxWidth: 720, margin: '0 auto', padding: '20px 16px 80px' }}>
+      <style>{`
+        .create-title { font-size:22px; }
+        .create-step-label { display:none; }
+        @media (min-width:480px) { .create-step-label { display:block; } }
+        @media (min-width:640px) {
+          .create-title { font-size:28px; }
+          [class^="create-"] { padding:0 24px 64px; }
+        }
+      `}</style>
+      <h1 className="create-title" style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: 'var(--gray-900)', marginBottom: 8 }}>Create NFT</h1>
       <p style={{ fontSize: 14, color: 'var(--gray-500)', marginBottom: 32 }}>Mint your artwork on the Mintara marketplace</p>
 
       {/* Step indicator */}
@@ -46,7 +55,7 @@ export default function CreatePage() {
               <div style={{ width: 32, height: 32, borderRadius: '50%', border: `2px solid ${i <= step ? 'var(--blue)' : 'var(--gray-300)'}`, background: i < step ? 'var(--blue)' : i === step ? 'var(--blue-tint)' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: i < step ? 'white' : i === step ? 'var(--blue)' : 'var(--gray-400)', transition: '.2s' }}>
                 {i < step ? '✓' : i + 1}
               </div>
-              <span style={{ fontSize: 11, fontWeight: 600, color: i === step ? 'var(--blue)' : 'var(--gray-400)' }}>{s}</span>
+              <span className="create-step-label" style={{ fontSize: 11, fontWeight: 600, color: i === step ? 'var(--blue)' : 'var(--gray-400)' }}>{s}</span>
             </div>
             {i < STEPS.length - 1 && (
               <div style={{ flex: 1, height: 2, background: i < step ? 'var(--blue)' : 'var(--gray-200)', margin: '0 8px', marginBottom: 20, transition: '.2s' }} />

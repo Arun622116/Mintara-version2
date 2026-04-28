@@ -19,7 +19,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: '60px auto', padding: '0 24px 64px' }}>
+    <div style={{ maxWidth: 420, margin: '0 auto', padding: '32px 20px 80px' }}>
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
         <div style={{ fontSize: 40, marginBottom: 16 }}>🌿</div>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 800, color: 'var(--gray-900)', marginBottom: 8 }}>Connect your wallet</h1>
@@ -29,7 +29,7 @@ export default function LoginPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
         {WALLETS.map(w => (
           <button key={w.name} onClick={() => connect(w.name)}
-            style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px', borderRadius: 12, border: '1.5px solid var(--gray-200)', background: 'white', cursor: 'pointer', transition: '.15s', textAlign: 'left', width: '100%' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '18px 20px', borderRadius: 14, border: '1.5px solid var(--gray-200)', background: 'white', cursor: 'pointer', transition: '.15s', textAlign: 'left', width: '100%', minHeight: 72 }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--blue)'; e.currentTarget.style.background = 'var(--blue-tint)' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--gray-200)'; e.currentTarget.style.background = 'white' }}>
             <span style={{ fontSize: 28, flexShrink: 0 }}>{w.icon}</span>

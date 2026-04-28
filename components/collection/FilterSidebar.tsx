@@ -19,7 +19,7 @@ function Section({ title, children, defaultOpen = true }: { title: string; child
       <button onClick={() => setOpen(o => !o)}
         style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-800)' }}>{title}</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" strokeWidth="2" strokeLinecap="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: '.2s' }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" strokeWidth="2" strokeLinecap="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: '.2s', flexShrink: 0 }}>
           <polyline points="6 9 12 15 18 9"/>
         </svg>
       </button>
@@ -30,7 +30,7 @@ function Section({ title, children, defaultOpen = true }: { title: string; child
 
 function CheckRow({ label, checked, count, onChange }: { label: string; checked: boolean; count?: number; onChange: () => void }) {
   return (
-    <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', cursor: 'pointer' }}>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', cursor: 'pointer', minHeight: 36 }}>
       <input type="checkbox" checked={checked} onChange={onChange} style={{ accentColor: 'var(--blue)', width: 16, height: 16, borderRadius: 4, flexShrink: 0 }} />
       <span style={{ flex: 1, fontSize: 13, color: 'var(--gray-700)' }}>{label}</span>
       {count !== undefined && <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>({count})</span>}
@@ -41,13 +41,10 @@ function CheckRow({ label, checked, count, onChange }: { label: string; checked:
 export default function FilterSidebar({ filters, collapsed, onToggleStatus, onToggleCategory, onToggleTrait, onSetPrice, traits }: Props) {
   const [priceMin, setPriceMin] = useState(filters.priceMin)
   const [priceMax, setPriceMax] = useState(filters.priceMax)
+  const isOpen = !collapsed
 
-  return (
-    <div className={`filter-sidebar${collapsed ? ' collapsed' : ''}`}>
-      <div style={{ padding: '12px 16px 8px', borderBottom: '1px solid var(--gray-150)' }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-700)' }}>Filter</span>
-      </div>
-
+  const content = (
+    <>
       <Section title="Status">
         <CheckRow label="Buy now"    checked={filters.status.includes('buy_now')}    onChange={() => onToggleStatus('buy_now')} />
         <CheckRow label="On auction" checked={filters.status.includes('on_auction')} onChange={() => onToggleStatus('on_auction')} />
@@ -58,13 +55,13 @@ export default function FilterSidebar({ filters, collapsed, onToggleStatus, onTo
       <Section title="Price">
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
           <input value={priceMin} onChange={e => setPriceMin(e.target.value)} placeholder="Min"
-            style={{ flex: 1, padding: '6px 8px', border: '1px solid var(--gray-200)', borderRadius: 8, fontSize: 12, color: 'var(--gray-700)', background: 'var(--gray-50)' }} />
+            style={{ flex: 1, padding: '7px 8px', border: '1px solid var(--gray-200)', borderRadius: 8, fontSize: 13, color: 'var(--gray-700)', background: 'var(--gray-50)', outline: 'none' }} />
           <span style={{ color: 'var(--gray-400)', fontSize: 12 }}>–</span>
           <input value={priceMax} onChange={e => setPriceMax(e.target.value)} placeholder="Max"
-            style={{ flex: 1, padding: '6px 8px', border: '1px solid var(--gray-200)', borderRadius: 8, fontSize: 12, color: 'var(--gray-700)', background: 'var(--gray-50)' }} />
+            style={{ flex: 1, padding: '7px 8px', border: '1px solid var(--gray-200)', borderRadius: 8, fontSize: 13, color: 'var(--gray-700)', background: 'var(--gray-50)', outline: 'none' }} />
         </div>
         <button onClick={() => onSetPrice(priceMin, priceMax)}
-          style={{ width: '100%', padding: '6px', border: '1px solid var(--gray-300)', borderRadius: 8, fontSize: 12, fontWeight: 600, background: 'white', cursor: 'pointer' }}>
+          style={{ width: '100%', padding: '8px', border: '1px solid var(--gray-300)', borderRadius: 8, fontSize: 13, fontWeight: 600, background: 'white', cursor: 'pointer' }}>
           Apply
         </button>
       </Section>
@@ -94,6 +91,49 @@ export default function FilterSidebar({ filters, collapsed, onToggleStatus, onTo
         <CheckRow label="Ethereum" checked={filters.chains.includes('Ethereum')} onChange={() => {}} />
         <CheckRow label="Solana"   checked={filters.chains.includes('Solana')}   onChange={() => {}} />
       </Section>
-    </div>
+    </>
+  )
+
+  return (
+    <>
+      {/* Mobile full-screen overlay */}
+      <div style={{
+        display: 'none',
+        position: 'fixed', inset: 0, zIndex: 400,
+      }} className="filter-mobile-wrap" aria-hidden={!isOpen}>
+        {/* Backdrop */}
+        <div style={{
+          position: 'absolute', inset: 0, background: 'rgba(0,0,0,.4)',
+          opacity: isOpen ? 1 : 0, transition: 'opacity .25s',
+        }} />
+        {/* Panel */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0, width: 300,
+          background: 'white', overflowY: 'auto',
+          transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform .3s ease',
+          display: 'flex', flexDirection: 'column',
+        }}>
+          <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--gray-150)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'white', zIndex: 1 }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--gray-800)' }}>Filters</span>
+          </div>
+          {content}
+        </div>
+      </div>
+
+      {/* Desktop sidebar — same as before */}
+      <div className={`filter-sidebar${collapsed ? ' collapsed' : ''}`}>
+        <div style={{ padding: '12px 16px 8px', borderBottom: '1px solid var(--gray-150)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-700)' }}>Filter</span>
+        </div>
+        {content}
+      </div>
+
+      <style>{`
+        @media (max-width: 1023px) {
+          .filter-mobile-wrap { display: block !important; }
+        }
+      `}</style>
+    </>
   )
 }
