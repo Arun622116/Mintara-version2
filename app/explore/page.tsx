@@ -97,20 +97,20 @@ export default function ExplorePage() {
         </div>
       )}
 
-      {/* Grid */}
-      <div className="explore-body">
-        <NftGrid nfts={filtered} />
+      {/* Sidebar + Grid flex row */}
+      <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+        <FilterSidebar
+          filters={filters}
+          collapsed={!sidebarOpen}
+          onToggleStatus={toggleStatus}
+          onToggleCategory={(c: string) => toggleCategory(c as NftCategory)}
+          onToggleTrait={() => {}}
+          onSetPrice={setPrice}
+        />
+        <div className="explore-body" style={{ flex: 1, minWidth: 0 }}>
+          <NftGrid nfts={filtered} />
+        </div>
       </div>
-
-      {/* Filter sidebar — overlay on mobile, hidden slot on desktop */}
-      <FilterSidebar
-        filters={filters}
-        collapsed={!sidebarOpen}
-        onToggleStatus={toggleStatus}
-        onToggleCategory={(c: string) => toggleCategory(c as NftCategory)}
-        onToggleTrait={() => {}}
-        onSetPrice={setPrice}
-      />
     </div>
   )
 }
